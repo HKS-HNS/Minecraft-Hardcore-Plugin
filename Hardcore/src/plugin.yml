@@ -1,0 +1,8 @@
+name: Hardcore
+version: 1.2
+api-version: 1.16
+main: me.HKS.HNS.Main
+author: HNS_HKS 
+commands:
+   Hardcore:
+            description: Plugin when you die multiple times you wil be in Spectator Mode
