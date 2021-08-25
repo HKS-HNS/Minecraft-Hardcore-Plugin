@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -19,10 +20,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import org.bukkit.event.player.PlayerFishEvent;
@@ -49,9 +53,8 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
         if (!ConfigFile.exists()) {
             Config.set("Death.Count", Integer.valueOf(DefaultDeathCount));
             Config.set("Fish.Count", Integer.valueOf(DefaultFishCount));
-            //TODO: Vor veröfentlichung bitte zurück zu 847 machen nicht zu 846
-            Config.set("players.1e43497a-ce3e-4381-8850-8410a676c846.Deaths", Integer.valueOf(0));
-            Config.set("players.1e43497a-ce3e-4381-8850-8410a676c846.MaxDeaths", Integer.valueOf(DefaultDeathCount));
+            Config.set("players.1e43497a-ce3e-4381-8850-8410a676c847.Deaths", Integer.valueOf(0));
+            Config.set("players.1e43497a-ce3e-4381-8850-8410a676c847.MaxDeaths", Integer.valueOf(DefaultDeathCount));
         }
         DefaultDeathCount = Config.getInt("Death.Count");
         DefaultFishCount = Config.getInt("Fish.Count");
@@ -78,7 +81,23 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
             p.setGameMode(GameMode.SURVIVAL);
         }
     }
+    @EventHandler
+    public void onHit(EntityDamageByEntityEvent e) {
 
+
+        if (e.getDamager() instanceof Player && e.getCause().equals(DamageCause.ENTITY_ATTACK)) {
+            Entity whoWasHit = e.getEntity();
+            Player Hitter = (Player) e.getDamager();
+
+            double distance = Hitter.getLocation().distance(whoWasHit.getLocation());
+            if (distance > 5) {
+                Bukkit.getBanList(BanList.Type.NAME).addBan(Hitter.getName(), "§4You had a range of §4§l" + distance, null, null);
+                Hitter.kickPlayer("§4You had a range of §4§l" + distance);
+            }
+        }
+    }
+
+    
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
         if (!(e.getEntity() instanceof Player)) {
@@ -87,7 +106,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
 
         UUID PlayerUUID = e.getEntity().getUniqueId();
         config();
-        createPlayer(PlayerUUID);
+        createPlayer(PlayerUUID); 
         int deaths = Config.getInt("players." + PlayerUUID + ".Deaths") + 1;
         int Maxdeaths = Config.getInt("players." + PlayerUUID + ".MaxDeaths");
         if (deaths >= Maxdeaths) {}
@@ -105,7 +124,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
         UUID PlayerUUID = e.getPlayer().getUniqueId();
         int deaths = Config.getInt("players." + PlayerUUID + ".Deaths");
         int Maxdeaths = Config.getInt("players." + PlayerUUID + ".MaxDeaths");
-        if (deaths >= Maxdeaths) {
+        if (deaths >= Maxdeaths) { // sets
             Create.CreateWorld(e.getPlayer());
             e.getPlayer().getInventory().clear();
             Player p = e.getPlayer();
