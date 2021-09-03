@@ -47,7 +47,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
         config();
     }
 
-    void config() {
+    void config() { // Refresh's the Config
         ConfigFile = new File("plugins/Hardcore", "config.yml");
         Config = YamlConfiguration.loadConfiguration(this.ConfigFile);
         if (!ConfigFile.exists()) {
@@ -74,7 +74,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
         createPlayer(PlayerUUID);
         int deaths = Config.getInt("players." + PlayerUUID + ".Deaths");
         int Maxdeaths = Config.getInt("players." + PlayerUUID + ".MaxDeaths");
-        if (deaths >= Maxdeaths) {
+        if (deaths >= Maxdeaths) { // Set's the player to adventure mode if he dies too many times and sends him to another world
             Create.CreateWorld(e.getPlayer());
         } else if (p.getGameMode().equals(GameMode.ADVENTURE)) {
 
@@ -90,7 +90,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
             Player Hitter = (Player) e.getDamager();
 
             double distance = Hitter.getLocation().distance(whoWasHit.getLocation());
-            if (distance > 5) {
+            if (distance > 5) { // If a player hits from a range that is higher than 5 blocks of distance, he would be banned
                 Bukkit.getBanList(BanList.Type.NAME).addBan(Hitter.getName(), "§4You had a range of §4§l" + distance, null, null);
                 Hitter.kickPlayer("§4You had a range of §4§l" + distance);
             }
@@ -100,7 +100,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
     
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
-        if (!(e.getEntity() instanceof Player)) {
+        if (!(e.getEntity() instanceof Player)) { // If the entity is a player, it counts the player deaths
             return;
         }
 
@@ -124,7 +124,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
         UUID PlayerUUID = e.getPlayer().getUniqueId();
         int deaths = Config.getInt("players." + PlayerUUID + ".Deaths");
         int Maxdeaths = Config.getInt("players." + PlayerUUID + ".MaxDeaths");
-        if (deaths >= Maxdeaths) { // sets
+        if (deaths >= Maxdeaths) { // If a player reaches the limit of deaths, he must go fishing 
             Create.CreateWorld(e.getPlayer());
             e.getPlayer().getInventory().clear();
             Player p = e.getPlayer();
@@ -137,9 +137,9 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
     }
 
     @EventHandler
-    public void onAdvancement(PlayerAdvancementDoneEvent e) {
+    public void onAdvancement(PlayerAdvancementDoneEvent e) {  
         UUID PlayerUUID = e.getPlayer().getUniqueId();
-        if (e.getAdvancement().getKey().getKey().toLowerCase().contains("adventure/kill_a_mob")) {
+        if (e.getAdvancement().getKey().getKey().toLowerCase().contains("adventure/kill_a_mob")) { // Add's a boring Advancement
             if (Config.get("players." + PlayerUUID + ".MaxDeaths") == null || Config.get("players." + PlayerUUID + ".Deaths") == null) {
                 return;
             }
@@ -153,7 +153,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
 
     @EventHandler
     public void onFish(PlayerFishEvent e) {
-        if (e.getPlayer().getWorld().equals(Bukkit.getWorld(e.getPlayer().getUniqueId().toString()))) {
+        if (e.getPlayer().getWorld().equals(Bukkit.getWorld(e.getPlayer().getUniqueId().toString()))) { // Replaces treasure from fishing when he is not in the normal world
             e.setExpToDrop(0);
             Set < Material > Fishs = new HashSet < Material > ();
             Fishs.add(Material.COD);
@@ -173,7 +173,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
 
     @Override
     public List < String > onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-        if (args.length == 1) {
+        if (args.length == 1) { // Add's AutoTabComplete
             Player p = (Player) sender;
             List < String > commands = new ArrayList < > ();
             if (p.getWorld().getName().equalsIgnoreCase(p.getUniqueId().toString())) {
@@ -203,13 +203,13 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
             UUID PlayerUUID = p.getUniqueId();
             config();
             if (Config.get("players." + PlayerUUID + ".MaxDeaths") == null || Config.get("players." + PlayerUUID + ".Deaths") == null) {
-                commandsend(p, "Somthing bad happened pleas rejoin. ⅽ");
+                commandsend(p, "Somthing bad happened pleas rejoin. ⅽ"); // Say's the player he must rejoin if he isn't saved in the config
                 return true;
             }
             int deaths = Config.getInt("players." + PlayerUUID + ".Deaths");
             int Maxdeaths = Config.getInt("players." + PlayerUUID + ".MaxDeaths");
 
-            if (args[0].equalsIgnoreCase("buy") && deaths < Maxdeaths) {
+            if (args[0].equalsIgnoreCase("buy") && deaths < Maxdeaths) { // Add's lives if the player buys them
                 if (args.length >= 2 && isNumeric(args[1])) {
                     if (p.getLevel() >= (5 * Integer.valueOf(args[1])) && Integer.valueOf(args[1]) >= 1) {
                         Config.set("players." + PlayerUUID + ".MaxDeaths", (Maxdeaths + Integer.valueOf(args[1])));
@@ -228,7 +228,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
 
                     // sender.sendMessage("§7Hardcore buy <count>  |  How many levels you want to buy");
                 }
-            } else if (args[0].equalsIgnoreCase("Deathsleft")) {
+            } else if (args[0].equalsIgnoreCase("Deathsleft")) { // Sends the lives to the player if the command is executed
                 if (Maxdeaths > deaths) {
                     commandsend(p, "§7 You have " + String.valueOf(Maxdeaths - deaths) + " Deaths Left");
 
@@ -237,7 +237,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
 
                 }
 
-            } else if (args[0].equalsIgnoreCase("BuyFree") && deaths >= Maxdeaths) {
+            } else if (args[0].equalsIgnoreCase("BuyFree") && deaths >= Maxdeaths) { // Sends the player to the normal world if he has enough fishes fished
                 config();
                 int Fishcount = Config.getInt("Fish.Count");
 
@@ -274,7 +274,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
         return false;
     }
 
-    public void createPlayer(UUID PlayerUUID) {
+    public void createPlayer(UUID PlayerUUID) { // creates a new player if he dont exists in the config
         if (Config.get("players." + PlayerUUID + ".MaxDeaths") == null) {
             Config.set("players." + PlayerUUID + ".MaxDeaths", Integer.valueOf(DefaultDeathCount));
         }
@@ -288,7 +288,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
 
         }
     }
-    public static int getAmount(Player player, Material Material) {
+    public static int getAmount(Player player, Material Material) { // Count's how many items of a specific type is in the inventory from the player
         PlayerInventory inventory = player.getInventory();
         ItemStack[] items = inventory.getContents();
         int has = 0;
