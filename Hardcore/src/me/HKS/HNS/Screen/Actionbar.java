@@ -17,6 +17,15 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 import me.HKS.HNS.Listeners.Config;
 
+
+
+/***
+ * 
+ * Control's all messages for the action bar
+ * 
+ * @author HKS-HNS
+ * 
+ */
 public class Actionbar {
     private ScheduledExecutorService exectorService = Executors.newScheduledThreadPool(0);
     public File ConfigFile = new File("plugins/Hardcore", "config.yml");
@@ -30,13 +39,12 @@ public class Actionbar {
             config();
             for (Player p: Bukkit.getOnlinePlayers()) {
                 UUID PlayerUUID = p.getUniqueId();
-                if (Confi.get("players." + PlayerUUID + ".MaxDeaths") == null || Confi.get("players." + PlayerUUID + ".Deaths") == null) {
+                if (Confi.get("players." + PlayerUUID + ".MaxDeaths") == null || Confi.get("players." + PlayerUUID + ".Deaths") == null) { // Test's if the player has an acc in the config.
                     p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§4§lPleas Rejoin Tanks Somthing bad happened. ⅽ"));
                 } else {
-                    //TODO: Machen das man wenn man genug fischhe hat richtig angezeigt wird
                     int deaths = Confi.getInt("players." + PlayerUUID + ".Deaths");
                     int Maxdeaths = Confi.getInt("players." + PlayerUUID + ".MaxDeaths");
-                    if (deaths >= Maxdeaths) {
+                    if (deaths >= Maxdeaths) { // Show's the right Message in the Action bar if the player has no lives left
                         int cod = (Config.getAmount(p, Material.COD) + Config.getAmount(p, Material.TROPICAL_FISH) + Config.getAmount(p, Material.SALMON) + Config.getAmount(p, Material.PUFFERFISH));
                         int Fishs = Confi.getInt("Fish.Count");
 
@@ -48,7 +56,7 @@ public class Actionbar {
 
                         }
                     } else {
-                        if ((Maxdeaths - deaths) <= 1) {
+                        if ((Maxdeaths - deaths) <= 1) { // Show's the lives they are left
                             p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§7You have only §4" + (Maxdeaths - deaths) + "§7 Lives Left"));
 
                         } else if ((Maxdeaths - deaths) <= 3) {
@@ -67,11 +75,11 @@ public class Actionbar {
         }, 0, 700, TimeUnit.MILLISECONDS);
     }
 
-    public void Stoptimer() {
+    public void StopAC() {
         exectorService.shutdownNow();
     }
 
-    public void Deltimer() {
+    public void DelAC() {
         exectorService.shutdownNow();
         sendActionBar("");
     }
