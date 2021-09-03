@@ -40,6 +40,13 @@ import org.bukkit.inventory.PlayerInventory;
 
 import me.HKS.HNS.World.Create;
 
+/***
+ * 
+ * The Hart of the Hardcore plugin
+ * 
+ * @author HKS-HNS
+ * 
+ */
 public class Config implements Listener, CommandExecutor, TabCompleter {
     public File ConfigFile = new File("plugins/Hardcore", "config.yml");
     public FileConfiguration Config = YamlConfiguration.loadConfiguration(ConfigFile);
@@ -90,7 +97,6 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
     @EventHandler
     public void onHit(EntityDamageByEntityEvent e) {
 
-
         if (e.getDamager() instanceof Player && e.getCause().equals(DamageCause.ENTITY_ATTACK) && AntiHack.equals(true)) {
             Entity whoWasHit = e.getEntity();
             Player Hitter = (Player) e.getDamager();
@@ -103,7 +109,6 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
         }
     }
 
-    
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
         if (!(e.getEntity() instanceof Player)) { // If the entity is a player, it counts the player deaths
@@ -112,7 +117,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
 
         UUID PlayerUUID = e.getEntity().getUniqueId();
         config();
-        createPlayer(PlayerUUID); 
+        createPlayer(PlayerUUID);
         int deaths = Config.getInt("players." + PlayerUUID + ".Deaths") + 1;
         int Maxdeaths = Config.getInt("players." + PlayerUUID + ".MaxDeaths");
         if (deaths >= Maxdeaths) {}
@@ -143,7 +148,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
     }
 
     @EventHandler
-    public void onAdvancement(PlayerAdvancementDoneEvent e) {  
+    public void onAdvancement(PlayerAdvancementDoneEvent e) {
         UUID PlayerUUID = e.getPlayer().getUniqueId();
         if (e.getAdvancement().getKey().getKey().toLowerCase().contains("adventure/kill_a_mob")) { // Add's a boring Advancement
             if (Config.get("players." + PlayerUUID + ".MaxDeaths") == null || Config.get("players." + PlayerUUID + ".Deaths") == null) {
@@ -257,11 +262,11 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
                         p.teleport(p.getBedSpawnLocation());
 
                     } else {
-                    	World MainWorld = Bukkit.getServer().getWorlds().get(0);
-                    	int SRange = MainWorld.getGameRuleValue(GameRule.SPAWN_RADIUS);
-                       int Zcord = ThreadLocalRandom.current().nextInt(MainWorld.getSpawnLocation().getBlockZ()-SRange,MainWorld.getSpawnLocation().getBlockZ()-SRange);
-                       int Xcord = ThreadLocalRandom.current().nextInt(MainWorld.getSpawnLocation().getBlockX()-SRange,MainWorld.getSpawnLocation().getBlockX()-SRange);
-                       p.teleport((Location) MainWorld.getBlockAt(Xcord, MainWorld.getHighestBlockYAt(Xcord, Zcord), Zcord));
+                        World MainWorld = Bukkit.getServer().getWorlds().get(0);
+                        int SRange = MainWorld.getGameRuleValue(GameRule.SPAWN_RADIUS);
+                        int Zcord = ThreadLocalRandom.current().nextInt(MainWorld.getSpawnLocation().getBlockZ() - SRange, MainWorld.getSpawnLocation().getBlockZ() - SRange);
+                        int Xcord = ThreadLocalRandom.current().nextInt(MainWorld.getSpawnLocation().getBlockX() - SRange, MainWorld.getSpawnLocation().getBlockX() - SRange);
+                        p.teleport((Location) MainWorld.getBlockAt(Xcord, MainWorld.getHighestBlockYAt(Xcord, Zcord), Zcord));
 
                     }
                     p.getInventory().clear();

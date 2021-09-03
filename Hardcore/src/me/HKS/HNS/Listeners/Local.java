@@ -16,8 +16,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-
-
 /***
  * 
  * My first version of the plugin, but without config and autocomplete.

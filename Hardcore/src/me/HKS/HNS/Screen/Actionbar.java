@@ -17,8 +17,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 import me.HKS.HNS.Listeners.Config;
 
-
-
 /***
  * 
  * Control's all messages for the action bar
