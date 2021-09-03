@@ -46,6 +46,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
 
     int DefaultDeathCount = 5;
     int DefaultFishCount = 10;
+    Boolean AntiHack = false;
     public Config() {
         config();
     }
@@ -56,11 +57,13 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
         if (!ConfigFile.exists()) {
             Config.set("Death.Count", Integer.valueOf(DefaultDeathCount));
             Config.set("Fish.Count", Integer.valueOf(DefaultFishCount));
+            Config.set("AntiHack.Range", AntiHack);
             Config.set("players.1e43497a-ce3e-4381-8850-8410a676c847.Deaths", Integer.valueOf(0));
             Config.set("players.1e43497a-ce3e-4381-8850-8410a676c847.MaxDeaths", Integer.valueOf(DefaultDeathCount));
         }
         DefaultDeathCount = Config.getInt("Death.Count");
         DefaultFishCount = Config.getInt("Fish.Count");
+        AntiHack = Config.getBoolean("AntiHack.Range");
         try {
             Config.save(ConfigFile);
         } catch (IOException e) {
@@ -88,7 +91,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
     public void onHit(EntityDamageByEntityEvent e) {
 
 
-        if (e.getDamager() instanceof Player && e.getCause().equals(DamageCause.ENTITY_ATTACK)) {
+        if (e.getDamager() instanceof Player && e.getCause().equals(DamageCause.ENTITY_ATTACK) && AntiHack.equals(true)) {
             Entity whoWasHit = e.getEntity();
             Player Hitter = (Player) e.getDamager();
 
