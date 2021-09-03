@@ -8,10 +8,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.GameRule;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -251,7 +254,12 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
                         p.teleport(p.getBedSpawnLocation());
 
                     } else {
-                        p.teleport(Bukkit.getServer().getWorlds().get(0).getSpawnLocation());
+                    	World MainWorld = Bukkit.getServer().getWorlds().get(0);
+                    	int SRange = MainWorld.getGameRuleValue(GameRule.SPAWN_RADIUS);
+                       int Zcord = ThreadLocalRandom.current().nextInt(MainWorld.getSpawnLocation().getBlockZ()-SRange,MainWorld.getSpawnLocation().getBlockZ()-SRange);
+                       int Xcord = ThreadLocalRandom.current().nextInt(MainWorld.getSpawnLocation().getBlockX()-SRange,MainWorld.getSpawnLocation().getBlockX()-SRange);
+                       p.teleport((Location) MainWorld.getBlockAt(Xcord, MainWorld.getHighestBlockYAt(Xcord, Zcord), Zcord));
+
                     }
                     p.getInventory().clear();
                     Config.set("players." + PlayerUUID + ".Deaths", Integer.valueOf(0));
