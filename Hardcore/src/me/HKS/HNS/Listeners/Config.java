@@ -130,7 +130,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
     }
 
     @EventHandler
-    public void onPLayerrevive(PlayerRespawnEvent e) {
+    public void onPlayerRespawn(PlayerRespawnEvent e) {
         config();
         UUID PlayerUUID = e.getPlayer().getUniqueId();
         int deaths = Config.getInt("players." + PlayerUUID + ".Deaths");
