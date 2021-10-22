@@ -6,10 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
-
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -52,6 +51,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
     public FileConfiguration Config = YamlConfiguration.loadConfiguration(ConfigFile);
 
     int DefaultDeathCount = 5;
+    int experienceLevels = 5;
     int DefaultWorldCount = -1;
     int DefaultFishCount = 10;
     Boolean AntiHack = false;
@@ -65,6 +65,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
         if (!ConfigFile.exists()) {
             Config.set("Death.Count", Integer.valueOf(DefaultDeathCount));
             Config.set("Fish.Count", Integer.valueOf(DefaultFishCount));
+            Config.set("Buy.Experiencelevels", Integer.valueOf(experienceLevels));
             Config.set("World.Max", Integer.valueOf(DefaultWorldCount));
             Config.set("AntiHack.Range", AntiHack);
             Config.set("players.1e43497a-ce3e-4381-8850-8410a676c847.Deaths", Integer.valueOf(0));
@@ -72,6 +73,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
         }
         DefaultDeathCount = Config.getInt("Death.Count");
         DefaultFishCount = Config.getInt("Fish.Count");
+        experienceLevels = Config.getInt("Buy.Experiencelevels");
         DefaultWorldCount = Config.getInt("World.Max");
         AntiHack = Config.getBoolean("AntiHack.Range");
         try {
@@ -140,16 +142,17 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
         int Maxdeaths = Config.getInt("players." + PlayerUUID + ".MaxDeaths");
         if (deaths >= Maxdeaths) { // If a player reaches the limit of deaths, he must go fishing 
             Player p = e.getPlayer();
-        	if (Bukkit.getWorlds().size() < DefaultWorldCount) {
-            Create.CreateWorld(p);
-            e.getPlayer().getInventory().clear();
-            World world = Bukkit.getWorld(PlayerUUID.toString());
-            e.setRespawnLocation(world.getSpawnLocation());
-            p.setGameMode(GameMode.ADVENTURE);
-            p.setExp(0);
-            p.setLevel(0);
-           }
-        	p.kickPlayer("There aren't Enough Worlds Free Try is again Later");
+            if (Bukkit.getWorlds().size() < DefaultWorldCount || DefaultWorldCount == -1) {
+                Create.CreateWorld(p);
+                e.getPlayer().getInventory().clear();
+                World world = Bukkit.getWorld(PlayerUUID.toString());
+                e.setRespawnLocation(world.getSpawnLocation());
+                p.setGameMode(GameMode.ADVENTURE);
+                p.setExp(0);
+                p.setLevel(0);
+            } else {
+                p.kickPlayer("There aren't Enough Worlds Free Try is again Later");
+            }
         }
     }
 
@@ -228,9 +231,9 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
 
             if (args[0].equalsIgnoreCase("buy") && deaths < Maxdeaths) { // Add's lives if the player buys them
                 if (args.length >= 2 && isNumeric(args[1])) {
-                    if (p.getLevel() >= (5 * Integer.valueOf(args[1])) && Integer.valueOf(args[1]) >= 1) {
+                    if (p.getLevel() >= (experienceLevels * Integer.valueOf(args[1])) && Integer.valueOf(args[1]) >= 1) {
                         Config.set("players." + PlayerUUID + ".MaxDeaths", (Maxdeaths + Integer.valueOf(args[1])));
-                        p.setLevel(p.getLevel() - (5 * Integer.valueOf(args[1])));
+                        p.setLevel(p.getLevel() - (experienceLevels * Integer.valueOf(args[1])));
                         try {
                             Config.save(ConfigFile);
                         } catch (IOException e) {
@@ -238,7 +241,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
                         }
                         return true;
                     } else {
-                        commandsend(p, "§7You dont have enough Exp Your levels: §a" + p.getLevel() + "§7 and §a" + (5 * Integer.valueOf(args[1])) + "§7 Levels are requiret.");
+                        commandsend(p, "§7You dont have enough Exp Your levels: §a" + p.getLevel() + "§7 and §a" + (experienceLevels * Integer.valueOf(args[1])) + "§7 Levels are requiret.");
                     }
                 } else {
                     commandsend(p, "§7Hardcore buy <count>  |  How many levels you want to buy", "§7One Live costs 5xp levels");
@@ -270,9 +273,18 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
                     } else {
                         World MainWorld = Bukkit.getServer().getWorlds().get(0);
                         int SRange = MainWorld.getGameRuleValue(GameRule.SPAWN_RADIUS);
-                        int Zcord = ThreadLocalRandom.current().nextInt(MainWorld.getSpawnLocation().getBlockZ() - SRange, MainWorld.getSpawnLocation().getBlockZ() - SRange);
-                        int Xcord = ThreadLocalRandom.current().nextInt(MainWorld.getSpawnLocation().getBlockX() - SRange, MainWorld.getSpawnLocation().getBlockX() - SRange);
-                        p.teleport((Location) MainWorld.getBlockAt(Xcord, MainWorld.getHighestBlockYAt(Xcord, Zcord), Zcord));
+                        Random random = new Random();
+                       Location randomLoc = MainWorld.getSpawnLocation();
+                        if (random.nextBoolean()) {
+                        	randomLoc.setX(MainWorld.getSpawnLocation().getBlockX() + random.nextInt(SRange));
+                        	randomLoc.setZ(MainWorld.getSpawnLocation().getBlockZ() + random.nextInt(SRange));
+                          } else {
+                        	  randomLoc.setX(MainWorld.getSpawnLocation().getBlockX() - random.nextInt(SRange));
+                        	  randomLoc.setZ(MainWorld.getSpawnLocation().getBlockZ()  - random.nextInt(SRange));
+                          } 
+                        randomLoc.setWorld(MainWorld);
+                        randomLoc.setY(MainWorld.getHighestBlockYAt(randomLoc));
+                        p.teleport(randomLoc);
 
                     }
                     p.getInventory().clear();
