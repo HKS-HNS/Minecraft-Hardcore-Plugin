@@ -16,7 +16,6 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable() { 
     	PluginDescriptionFile pdf = this.getDescription();
- 
         this.getServer().getPluginManager().registerEvents((Listener) new Config(), (Plugin) this);
         this.getCommand("Hardcore").setExecutor((CommandExecutor) new Config());
         this.getCommand("Hardcore").setTabCompleter((TabCompleter) new Config());
