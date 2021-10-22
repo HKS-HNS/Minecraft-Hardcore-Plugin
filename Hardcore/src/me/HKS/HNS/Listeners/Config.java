@@ -52,6 +52,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
     public FileConfiguration Config = YamlConfiguration.loadConfiguration(ConfigFile);
 
     int DefaultDeathCount = 5;
+    int DefaultWorldCount = -1;
     int DefaultFishCount = 10;
     Boolean AntiHack = false;
     public Config() {
@@ -64,12 +65,14 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
         if (!ConfigFile.exists()) {
             Config.set("Death.Count", Integer.valueOf(DefaultDeathCount));
             Config.set("Fish.Count", Integer.valueOf(DefaultFishCount));
+            Config.set("World.Max", Integer.valueOf(DefaultWorldCount));
             Config.set("AntiHack.Range", AntiHack);
             Config.set("players.1e43497a-ce3e-4381-8850-8410a676c847.Deaths", Integer.valueOf(0));
             Config.set("players.1e43497a-ce3e-4381-8850-8410a676c847.MaxDeaths", Integer.valueOf(DefaultDeathCount));
         }
         DefaultDeathCount = Config.getInt("Death.Count");
         DefaultFishCount = Config.getInt("Fish.Count");
+        DefaultWorldCount = Config.getInt("World.Max");
         AntiHack = Config.getBoolean("AntiHack.Range");
         try {
             Config.save(ConfigFile);
@@ -136,14 +139,17 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
         int deaths = Config.getInt("players." + PlayerUUID + ".Deaths");
         int Maxdeaths = Config.getInt("players." + PlayerUUID + ".MaxDeaths");
         if (deaths >= Maxdeaths) { // If a player reaches the limit of deaths, he must go fishing 
-            Create.CreateWorld(e.getPlayer());
-            e.getPlayer().getInventory().clear();
             Player p = e.getPlayer();
+        	if (Bukkit.getWorlds().size() < DefaultWorldCount) {
+            Create.CreateWorld(p);
+            e.getPlayer().getInventory().clear();
             World world = Bukkit.getWorld(PlayerUUID.toString());
             e.setRespawnLocation(world.getSpawnLocation());
             p.setGameMode(GameMode.ADVENTURE);
             p.setExp(0);
             p.setLevel(0);
+           }
+        	p.kickPlayer("There aren't Enough Worlds Free Try is again Later");
         }
     }
 
