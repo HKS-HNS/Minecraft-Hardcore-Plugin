@@ -5,4 +5,4 @@ main: me.HKS.HNS.Main
 author: HNS_HKS 
 commands:
    Hardcore:
-            description: Plugin when you die multiple times you wil be in Spectator Mode
+            description: Plugin when you die multiple times, you must go fish
