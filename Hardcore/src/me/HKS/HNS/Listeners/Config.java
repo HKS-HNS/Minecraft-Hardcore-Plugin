@@ -57,7 +57,6 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
 
     int DefaultDeathCount = 5;
     int experienceLevels = 5;
-    int DefaultWorldCount = -1;
     int DefaultFishCount = 10;
     Boolean AntiHack = false;
     public Config() {
@@ -71,7 +70,6 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
             Config.set("Death.Count", Integer.valueOf(DefaultDeathCount));
             Config.set("Fish.Count", Integer.valueOf(DefaultFishCount));
             Config.set("Buy.Experiencelevels", Integer.valueOf(experienceLevels));
-            Config.set("World.Max", Integer.valueOf(DefaultWorldCount));
             Config.set("AntiHack.Range", AntiHack);
             Config.set("players.1e43497a-ce3e-4381-8850-8410a676c847.Deaths", Integer.valueOf(0));
             Config.set("players.1e43497a-ce3e-4381-8850-8410a676c847.MaxDeaths", Integer.valueOf(DefaultDeathCount));
@@ -79,7 +77,6 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
         DefaultDeathCount = Config.getInt("Death.Count");
         DefaultFishCount = Config.getInt("Fish.Count");
         experienceLevels = Config.getInt("Buy.Experiencelevels");
-        DefaultWorldCount = Config.getInt("World.Max");
         AntiHack = Config.getBoolean("AntiHack.Range");
         try {
             Config.save(ConfigFile);
