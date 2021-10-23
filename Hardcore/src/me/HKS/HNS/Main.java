@@ -19,11 +19,12 @@ import me.HKS.HNS.Screen.Actionbar;
  */
 
 public class Main extends JavaPlugin {
-	private static Main Instance;
+    public static Main Instance;
     Actionbar Ac = new Actionbar(); // Set's the Actionbar
     @Override
-    public void onEnable() { 
-    	PluginDescriptionFile pdf = this.getDescription();
+    public void onEnable() {
+        Instance = this;
+        PluginDescriptionFile pdf = this.getDescription();
         this.getServer().getPluginManager().registerEvents((Listener) new Config(), (Plugin) this);
         this.getCommand("Hardcore").setExecutor((CommandExecutor) new Config());
         this.getCommand("Hardcore").setTabCompleter((TabCompleter) new Config());
@@ -31,13 +32,15 @@ public class Main extends JavaPlugin {
         new Updater(pdf, this.getFile());
 
     }
- 
+
     @Override
     public void onDisable() {
         Ac.DelAC();
     }
-    
-    
-	public static Main getInstance() {return Instance;}
+
+    public static Main getInstance() {
+        return Instance;
+
+    }
 
 }
