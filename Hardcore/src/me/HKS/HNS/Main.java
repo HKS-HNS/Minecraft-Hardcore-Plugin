@@ -10,6 +10,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.HKS.HNS.Listeners.Config;
 import me.HKS.HNS.Screen.Actionbar;
 
+/***
+ * 
+ * Main Class
+ * 
+ * @author HKS-HNS
+ * 
+ */
+
 public class Main extends JavaPlugin {
 	private static Main Instance;
     Actionbar Ac = new Actionbar(); // Set's the Actionbar
