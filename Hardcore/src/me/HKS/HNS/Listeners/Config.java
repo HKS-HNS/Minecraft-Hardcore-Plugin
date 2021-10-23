@@ -31,12 +31,17 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import me.HKS.HNS.Main;
 import me.HKS.HNS.World.Create;
 
 /***
@@ -142,17 +147,17 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
         int Maxdeaths = Config.getInt("players." + PlayerUUID + ".MaxDeaths");
         if (deaths >= Maxdeaths) { // If a player reaches the limit of deaths, he must go fishing 
             Player p = e.getPlayer();
-            if (Bukkit.getWorlds().size() < DefaultWorldCount || DefaultWorldCount == -1) {
-                Create.CreateWorld(p);
-                e.getPlayer().getInventory().clear();
-                World world = Bukkit.getWorld(PlayerUUID.toString());
-                e.setRespawnLocation(world.getSpawnLocation());
-                p.setGameMode(GameMode.ADVENTURE);
-                p.setExp(0);
-                p.setLevel(0);
-            } else {
-                p.kickPlayer("There aren't Enough Worlds Free Try is again Later");
+            Create.CreateWorld(p);
+            String DeathWorld = "DeathPlayerWorld";
+            e.getPlayer().getInventory().clear();
+            if (Bukkit.getWorld(DeathWorld) != null) {
+                Location spawn = Bukkit.getWorld(DeathWorld).getSpawnLocation();
+                spawn.setY(3);
+                e.setRespawnLocation(spawn);
             }
+            p.setGameMode(GameMode.ADVENTURE);
+            p.setExp(0);
+            p.setLevel(0);
         }
     }
 
@@ -173,22 +178,63 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
 
     @EventHandler
     public void onFish(PlayerFishEvent e) {
-        if (e.getPlayer().getWorld().equals(Bukkit.getWorld(e.getPlayer().getUniqueId().toString()))) { // Replaces treasure from fishing when he is not in the normal world
-            e.setExpToDrop(0);
-            Set < Material > Fishs = new HashSet < Material > ();
-            Fishs.add(Material.COD);
-            Fishs.add(Material.TROPICAL_FISH);
-            Fishs.add(Material.SALMON);
-            Fishs.add(Material.PUFFERFISH);
-            if (e.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
-                if (!Fishs.contains(((Item) e.getCaught()).getItemStack().getType())) {
-                    e.setCancelled(true);
-                    e.getPlayer().getInventory().addItem(new ItemStack[] {
-                        new ItemStack(Material.COD)
-                    });
+        String DeathWorld = "DeathPlayerWorld";
+        if (Bukkit.getWorld(DeathWorld) != null)
+            if (e.getPlayer().getWorld().equals(Bukkit.getWorld(DeathWorld))) { // Replaces treasure from fishing when he is not in the normal world
+                e.setExpToDrop(0);
+                Set < Material > Fishs = new HashSet < Material > ();
+                Fishs.add(Material.COD);
+                Fishs.add(Material.TROPICAL_FISH);
+                Fishs.add(Material.SALMON);
+                Fishs.add(Material.PUFFERFISH);
+                if (e.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
+                    if (!Fishs.contains(((Item) e.getCaught()).getItemStack().getType())) {
+                        e.setCancelled(true);
+                        e.getPlayer().getInventory().addItem(new ItemStack[] {
+                            new ItemStack(Material.COD)
+                        });
+                    }
                 }
             }
+    }
+
+    @EventHandler
+    public void OnChestOpen(PlayerInteractEvent e) {
+        if (e.hasBlock()) {
+            if (e.getClickedBlock().getType() == Material.CHEST) {
+                String DeathWorld = "DeathPlayerWorld";
+                if (Bukkit.getWorld(DeathWorld) != null)
+                    if (e.getClickedBlock().getWorld().equals(Bukkit.getWorld(DeathWorld))) {
+                        Inventory inv = Bukkit.createInventory(null, 27);
+                        ItemStack Frod = new ItemStack(Material.FISHING_ROD);
+                        ItemMeta itemMeta = Frod.getItemMeta();
+                        itemMeta.setUnbreakable(true);
+                        Frod.setItemMeta(itemMeta);
+                        for (int i = 0; i < inv.getSize(); i++) {
+                            inv.setItem(i, Frod);
+                        }
+                        e.setCancelled(true);
+                        e.getPlayer().openInventory(inv);
+                    }
+            }
         }
+    }
+    @EventHandler
+    public void OnDropEvent(PlayerDropItemEvent e) {
+        String DeathWorld = "DeathPlayerWorld";
+        if (Bukkit.getWorld(DeathWorld) != null)
+            if (e.getPlayer().getWorld().equals(Bukkit.getWorld(DeathWorld))) {
+
+                ItemStack Frod = new ItemStack(Material.FISHING_ROD);
+                ItemMeta itemMeta = Frod.getItemMeta();
+                itemMeta.setUnbreakable(true);
+                Frod.setItemMeta(itemMeta);
+                if (e.getItemDrop().getItemStack().equals(Frod)) {
+                    e.getItemDrop().remove();
+                } else {
+                    e.setCancelled(true);
+                }
+            }
     }
 
     @Override
@@ -196,7 +242,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
         if (args.length == 1) { // Add's AutoTabComplete
             Player p = (Player) sender;
             List < String > commands = new ArrayList < > ();
-            if (p.getWorld().getName().equalsIgnoreCase(p.getUniqueId().toString())) {
+            if (p.getWorld().getName().equalsIgnoreCase("DeathPlayerWorld")) {
                 commands.add("BuyFree");
             } else {
                 commands.add("Buy");
@@ -267,23 +313,38 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
                     p.setGameMode(GameMode.SURVIVAL);
                     p.setExp(0);
                     p.setLevel(0);
+                    if (Bukkit.getWorld("DeathPlayerWorld") != null)
+                        for (Player pl: Bukkit.getWorld("DeathPlayerWorld").getPlayers()) {
+
+                            if (!pl.equals(p)) {
+                                pl.showPlayer(Main.getInstance(), p);
+                                p.showPlayer(Main.getInstance(), pl);
+                            }
+                        }
                     if (p.getBedSpawnLocation() != null) {
                         p.teleport(p.getBedSpawnLocation());
 
                     } else {
+
                         World MainWorld = Bukkit.getServer().getWorlds().get(0);
                         int SRange = MainWorld.getGameRuleValue(GameRule.SPAWN_RADIUS);
                         Random random = new Random();
-                       Location randomLoc = MainWorld.getSpawnLocation();
-                        if (random.nextBoolean()) {
-                        	randomLoc.setX(MainWorld.getSpawnLocation().getBlockX() + random.nextInt(SRange));
-                        	randomLoc.setZ(MainWorld.getSpawnLocation().getBlockZ() + random.nextInt(SRange));
-                          } else {
-                        	  randomLoc.setX(MainWorld.getSpawnLocation().getBlockX() - random.nextInt(SRange));
-                        	  randomLoc.setZ(MainWorld.getSpawnLocation().getBlockZ()  - random.nextInt(SRange));
-                          } 
-                        randomLoc.setWorld(MainWorld);
-                        randomLoc.setY(MainWorld.getHighestBlockYAt(randomLoc));
+                        Location randomLoc = MainWorld.getSpawnLocation();
+
+                        try {
+                            if (random.nextBoolean()) {
+                                randomLoc.setX(MainWorld.getSpawnLocation().getBlockX() + random.nextInt(SRange));
+                                randomLoc.setZ(MainWorld.getSpawnLocation().getBlockZ() + random.nextInt(SRange));
+                            } else {
+                                randomLoc.setX(MainWorld.getSpawnLocation().getBlockX() - random.nextInt(SRange));
+                                randomLoc.setZ(MainWorld.getSpawnLocation().getBlockZ() - random.nextInt(SRange));
+                            }
+                            randomLoc.setWorld(MainWorld);
+                            randomLoc.setY(MainWorld.getHighestBlockYAt(randomLoc));
+                        } catch (Exception e) {
+
+                        }
+
                         p.teleport(randomLoc);
 
                     }
