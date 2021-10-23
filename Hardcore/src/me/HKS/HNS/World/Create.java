@@ -19,11 +19,19 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+/***
+ * 
+ * To Create the Player for each Player
+ * 
+ * @author HKS-HNS
+ * 
+ */
 public class Create {
 
     public static void CreateWorld(Player p) {
         String worlds = p.getUniqueId().toString();
         if (!Bukkit.getServer().getWorlds().contains(Bukkit.getWorld(worlds)) || Bukkit.getWorld(worlds).getWorldFolder().exists()) {
+        	//Creates the World if not exists
             World world = Bukkit.createWorld(new WorldCreator(worlds).type(WorldType.FLAT).generateStructures(false));
             world.setPVP(false);
             world.setKeepSpawnInMemory(false);
