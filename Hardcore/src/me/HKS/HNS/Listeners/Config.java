@@ -176,8 +176,9 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
     @EventHandler
     public void onFish(PlayerFishEvent e) {
         String DeathWorld = "DeathPlayerWorld";
+        Player p = e.getPlayer();
         if (Bukkit.getWorld(DeathWorld) != null)
-            if (e.getPlayer().getWorld().equals(Bukkit.getWorld(DeathWorld))) { // Replaces treasure from fishing when he is not in the normal world
+            if (p.getWorld().equals(Bukkit.getWorld(DeathWorld))) { // Replaces treasure from fishing when he is not in the normal world
                 e.setExpToDrop(0);
                 Set < Material > Fishs = new HashSet < Material > ();
                 Fishs.add(Material.COD);
@@ -185,18 +186,28 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
                 Fishs.add(Material.SALMON);
                 Fishs.add(Material.PUFFERFISH);
                 if (e.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
-                    if (!Fishs.contains(((Item) e.getCaught()).getItemStack().getType())) {
-                        e.setCancelled(true);
-                        e.getPlayer().getInventory().addItem(new ItemStack[] {
+                    e.setCancelled(true);
+                    if (Fishs.contains(((Item) e.getCaught()).getItemStack().getType())) {
+                        p.getInventory().addItem(((Item) e.getCaught()).getItemStack());
+                    } else {
+                        p.getInventory().addItem(new ItemStack[] {
                             new ItemStack(Material.COD)
                         });
                     }
+                } else if (e.getState() == PlayerFishEvent.State.FISHING) {
+                    /*  for (Player pl: Bukkit.getWorld(DeathWorld).getPlayers()) { // It would stop sounds if it would Work
+                        if (!pl.equals(p)) {
+                            pl.stopSound(Sound.ENTITY_FISHING_BOBBER_RETRIEVE);
+                            pl.stopSound(Sound.ENTITY_FISHING_BOBBER_SPLASH);
+							pl.stopSound(Sound.ENTITY_FISHING_BOBBER_THROW);
+                        }
+                    }*/
                 }
             }
     }
 
     @EventHandler
-    public void OnChestOpen(PlayerInteractEvent e) {
+    public void OnChestOpen(PlayerInteractEvent e) { // Creates a Chest for the Fishing
         if (e.hasBlock()) {
             if (e.getClickedBlock().getType() == Material.CHEST) {
                 String DeathWorld = "DeathPlayerWorld";
@@ -216,6 +227,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
             }
         }
     }
+
     @EventHandler
     public void OnDropEvent(PlayerDropItemEvent e) {
         String DeathWorld = "DeathPlayerWorld";
