@@ -8,6 +8,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.HKS.HNS.Listeners.Config;
+import me.HKS.HNS.Listeners.StopSound;
 import me.HKS.HNS.Screen.Actionbar;
 
 /***
@@ -25,6 +26,9 @@ public class Main extends JavaPlugin {
     public void onEnable() {
         Instance = this;
         PluginDescriptionFile pdf = this.getDescription();
+        if(getServer().getPluginManager().getPlugin("ProtocolLib") != null) {
+        	new StopSound();
+        }
         this.getServer().getPluginManager().registerEvents((Listener) new Config(), (Plugin) this);
         this.getCommand("Hardcore").setExecutor((CommandExecutor) new Config());
         this.getCommand("Hardcore").setTabCompleter((TabCompleter) new Config());
