@@ -123,7 +123,6 @@ public class Create {
             }
         }
         p.teleport(spawn.add(0, 1, 0));
-        p.dropItem(false);
     }
 
     public static void DelWorld(Player p) { // Deletes the world if empty
