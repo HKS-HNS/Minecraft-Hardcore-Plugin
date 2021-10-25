@@ -194,15 +194,8 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
                             new ItemStack(Material.COD)
                         });
                     }
-                } else if (e.getState() == PlayerFishEvent.State.FISHING) {
-                    /*  for (Player pl: Bukkit.getWorld(DeathWorld).getPlayers()) { // It would stop sounds if it would Work
-                        if (!pl.equals(p)) {
-                            pl.stopSound(Sound.ENTITY_FISHING_BOBBER_RETRIEVE);
-                            pl.stopSound(Sound.ENTITY_FISHING_BOBBER_SPLASH);
-							pl.stopSound(Sound.ENTITY_FISHING_BOBBER_THROW);
-                        }
-                    }*/
                 }
+
             }
     }
 
