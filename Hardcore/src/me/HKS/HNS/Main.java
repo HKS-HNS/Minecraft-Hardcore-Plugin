@@ -22,19 +22,18 @@ import me.HKS.HNS.Screen.Actionbar;
 public class Main extends JavaPlugin {
     public static Main Instance;
     Actionbar Ac = new Actionbar(); // Set's the Actionbar
+
     @Override
     public void onEnable() {
+
         Instance = this;
-        PluginDescriptionFile pdf = this.getDescription();
-        if(getServer().getPluginManager().getPlugin("ProtocolLib") != null) {
-        	new StopSound();
-        }
+        PluginDescriptionFile pdf = this.getDescription();;
+        this.getServer().getPluginManager().registerEvents((Listener) new StopSound(), (Plugin) this);
         this.getServer().getPluginManager().registerEvents((Listener) new Config(), (Plugin) this);
         this.getCommand("Hardcore").setExecutor((CommandExecutor) new Config());
         this.getCommand("Hardcore").setTabCompleter((TabCompleter) new Config());
         Ac.Start();
         new Updater(pdf, this.getFile());
-
     }
 
     @Override
