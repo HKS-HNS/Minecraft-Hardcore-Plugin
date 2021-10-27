@@ -101,6 +101,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
             p.setGameMode(GameMode.SURVIVAL);
         }
     }
+    
     @EventHandler
     public void onHit(EntityDamageByEntityEvent e) {
 
@@ -147,14 +148,14 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
             Create.CreateWorld(p);
             String DeathWorld = "DeathPlayerWorld";
             e.getPlayer().getInventory().clear();
+            p.setGameMode(GameMode.ADVENTURE);
+            p.setExp(0);
+            p.setLevel(0);
             if (Bukkit.getWorld(DeathWorld) != null) {
                 Location spawn = Bukkit.getWorld(DeathWorld).getSpawnLocation();
                 spawn.setY(3);
                 e.setRespawnLocation(spawn);
             }
-            p.setGameMode(GameMode.ADVENTURE);
-            p.setExp(0);
-            p.setLevel(0);
         }
     }
 
@@ -186,7 +187,8 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
                 Fishs.add(Material.SALMON);
                 Fishs.add(Material.PUFFERFISH);
                 if (e.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
-                    e.setCancelled(true);
+                   // e.setCancelled(true);
+                	e.getCaught().remove();
                     if (Fishs.contains(((Item) e.getCaught()).getItemStack().getType())) {
                         p.getInventory().addItem(((Item) e.getCaught()).getItemStack());
                     } else {
