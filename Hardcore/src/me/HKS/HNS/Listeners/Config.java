@@ -101,7 +101,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
             p.setGameMode(GameMode.SURVIVAL);
         }
     }
-    
+
     @EventHandler
     public void onHit(EntityDamageByEntityEvent e) {
 
@@ -145,13 +145,19 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
         int Maxdeaths = Config.getInt("players." + PlayerUUID + ".MaxDeaths");
         if (deaths >= Maxdeaths) { // If a player reaches the limit of deaths, he must go fishing 
             Player p = e.getPlayer();
-            Create.CreateWorld(p);
             String DeathWorld = "DeathPlayerWorld";
-            e.getPlayer().getInventory().clear();
+
+            if (!p.getWorld().getName().equalsIgnoreCase(DeathWorld)) {
+                p.getInventory().clear();
+            }
+            if (Create.CreateWorld(p) == false)
+                return;
+
             p.setGameMode(GameMode.ADVENTURE);
             p.setExp(0);
             p.setLevel(0);
             if (Bukkit.getWorld(DeathWorld) != null) {
+
                 Location spawn = Bukkit.getWorld(DeathWorld).getSpawnLocation();
                 spawn.setY(3);
                 e.setRespawnLocation(spawn);
@@ -187,8 +193,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
                 Fishs.add(Material.SALMON);
                 Fishs.add(Material.PUFFERFISH);
                 if (e.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
-                   // e.setCancelled(true);
-                	e.getCaught().remove();
+                    e.getCaught().remove();
                     if (Fishs.contains(((Item) e.getCaught()).getItemStack().getType())) {
                         p.getInventory().addItem(((Item) e.getCaught()).getItemStack());
                     } else {
@@ -226,15 +231,17 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
     @EventHandler
     public void OnDropEvent(PlayerDropItemEvent e) {
         String DeathWorld = "DeathPlayerWorld";
+        Player p = e.getPlayer();
         if (Bukkit.getWorld(DeathWorld) != null)
-            if (e.getPlayer().getWorld().equals(Bukkit.getWorld(DeathWorld))) {
+            if (p.getWorld().equals(Bukkit.getWorld(DeathWorld))) {
 
                 ItemStack Frod = new ItemStack(Material.FISHING_ROD);
                 ItemMeta itemMeta = Frod.getItemMeta();
                 itemMeta.setUnbreakable(true);
                 Frod.setItemMeta(itemMeta);
-                if (e.getItemDrop().getItemStack().equals(Frod)) {
-                    e.getItemDrop().remove();
+                Item drop = e.getItemDrop();
+                if (drop.getItemStack().equals(Frod)) {
+                    drop.remove();
                 } else {
                     e.setCancelled(true);
                 }
@@ -296,7 +303,6 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
                 } else {
                     commandsend(p, "§7Hardcore buy <count>  |  How many levels you want to buy", "§7One Live costs 5xp levels");
 
-                    // sender.sendMessage("§7Hardcore buy <count>  |  How many levels you want to buy");
                 }
             } else if (args[0].equalsIgnoreCase("Deathsleft")) { // Sends the lives to the player if the command is executed
                 if (Maxdeaths > deaths) {
