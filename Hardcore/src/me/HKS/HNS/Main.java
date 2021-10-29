@@ -14,6 +14,7 @@ import me.HKS.HNS.Listeners.StopSound_v1_15_R1;
 import me.HKS.HNS.Listeners.StopSound_v1_16_R3;
 import me.HKS.HNS.Listeners.StopSound_v1_17_R1;
 import me.HKS.HNS.Screen.Actionbar;
+import me.HKS.HNS.World.Create;
 
 /***
  * 
@@ -32,17 +33,12 @@ public class Main extends JavaPlugin {
     
     @Override
     public void onEnable() { 
-    	
     	if (!setupManager()) {
     	getLogger().info("Failed to setup Hardcore! Running non-compatible version!");
     	Bukkit.getPluginManager().disablePlugin(this);
     	return;
     	}
-        // ge 394 ENTITY_FISHING_BOBBER_RETRIEVE 1.17
-        // gf 395 ENTITY_FISHING_BOBBER_SPLASH 1.17
-        // gg 396 ENTITY_FISHING_BOBBER_THROW 1.17
-        // gN 377 generic.splash 1.17
-    	
+    	Create.createWorld();
         Instance = this;
         PluginDescriptionFile pdf = this.getDescription();;
         this.getServer().getPluginManager().registerEvents((Listener) new Config(), (Plugin) this);
@@ -55,6 +51,7 @@ public class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         Ac.DelAC();
+        Create.delWorld();
     }
 
     private boolean setupManager() {

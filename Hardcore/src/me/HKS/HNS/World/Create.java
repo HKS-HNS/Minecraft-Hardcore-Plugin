@@ -1,8 +1,6 @@
 package me.HKS.HNS.World;
 
 import java.io.File;
-import java.io.IOException;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
@@ -27,7 +25,7 @@ import me.HKS.HNS.Main;
  * 
  */
 public class Create {
-    public static boolean CreateWorld(Player p) {
+    public static boolean createWorld() {
         String DeathWorld = "DeathPlayerWorld";
         if (!Bukkit.getServer().getWorlds().contains(Bukkit.getWorld(DeathWorld)) || !Bukkit.getWorld(DeathWorld).getWorldFolder().exists()) {
             //Creates the World if not exists
@@ -35,80 +33,87 @@ public class Create {
             Bukkit.getServer().getWorlds().add(world);
             world.getWorldBorder().setSize(15);
 
-            p.setGameMode(GameMode.ADVENTURE);
-            p.setExp(0);
-            p.setLevel(0);
+          
         }
-        World world = Bukkit.getWorld(DeathWorld);
-        Location spawn = world.getSpawnLocation();
-        spawn.setY(1);
-
-        int x;
-        for (x = spawn.getBlockX() - 7; x <= spawn.getBlockX() + 7; x++) {
-            for (int y = spawn.getBlockY(); y <= spawn.getBlockY() + 10; y++) {
-                for (int z = spawn.getBlockZ() - 7; z <= spawn.getBlockZ() + 7; z++) {
-                    world.getBlockAt(x, y, z).setType(Material.BEDROCK);
-                }
-            }
-        }
-
-        for (x = spawn.getBlockX() - 6; x <= spawn.getBlockX() + 6; x++) {
-            for (int y = spawn.getBlockY() + 2; y <= spawn.getBlockY() + 10; y++) {
-                for (int z = spawn.getBlockZ() - 6; z <= spawn.getBlockZ() + 6; z++) {
-                    world.getBlockAt(x, y, z).setType(Material.AIR);
-                }
-            }
-        }
-
-        for (x = spawn.getBlockX() - 7; x <= spawn.getBlockX() + 7; x++) {
-            for (int y = spawn.getBlockY() + 10; y <= spawn.getBlockY() + 10; y++) {
-                for (int z = spawn.getBlockZ() - 7; z <= spawn.getBlockZ() + 7; z++) {
-                    world.getBlockAt(x, y, z).setType(Material.BARRIER);
-                }
-            }
-        }
-        spawn.setY(2);
-        Location chestLocation = new Location(world, spawn.getBlockX(), spawn.getBlockY() + 1, spawn.getBlockZ() - 2);
-        chestLocation.getBlock().setType(Material.CHEST);
-        if (chestLocation.getBlock().getState() instanceof Chest) {
-            Chest chest = (Chest) chestLocation.getBlock().getState();
-            Directional d = (Directional) chestLocation.getBlock().getBlockData();
-            d.setFacing(BlockFace.SOUTH);
-            chest.setBlockData(d);
-            chest.update();
-        }
-        world.setPVP(false);
-        world.setKeepSpawnInMemory(false);
-        world.setDifficulty(Difficulty.PEACEFUL);
-        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-        world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
-        world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
-        world.setGameRule(GameRule.DISABLE_RAIDS, true);
-        //world.setGameRule(GameRule.DO_PATROL_SPAWNING, false);
-        //world.setGameRule(GameRule.DO_TRADER_SPAWNING, false);
-        world.setGameRule(GameRule.KEEP_INVENTORY, true);
-        world.setGameRule(GameRule.SPAWN_RADIUS, 5);
-        for (x = spawn.getBlockX() - 1; x <= spawn.getBlockX() + 1; x++) {
-            for (int y = spawn.getBlockY(); y <= spawn.getBlockY(); y++) {
-                for (int z = spawn.getBlockZ() + 1; z <= spawn.getBlockZ() + 3; z++) {
-                    world.getBlockAt(x, y, z).setType(Material.WATER);
-                }
-            }
-        }
-
-        for (Player pl: world.getPlayers()) {
-
-            if (!pl.equals(p)) {
-                pl.hidePlayer(Main.getInstance(), p);
-                p.hidePlayer(Main.getInstance(), pl);
-
-            }
-        }
-        p.teleport(spawn.add(0, 1, 0));
+        
         return true;
     }
+    
+    
+   public static void tpToWorld(Player p) {
+       String DeathWorld = "DeathPlayerWorld";
+	   World world = Bukkit.getWorld(DeathWorld);
+       Location spawn = world.getSpawnLocation();
+       spawn.setY(1);
 
-    public static void DelWorld(Player p) { // Deletes the world if empty
+       int x;
+       for (x = spawn.getBlockX() - 7; x <= spawn.getBlockX() + 7; x++) {
+           for (int y = spawn.getBlockY(); y <= spawn.getBlockY() + 10; y++) {
+               for (int z = spawn.getBlockZ() - 7; z <= spawn.getBlockZ() + 7; z++) {
+                   world.getBlockAt(x, y, z).setType(Material.BEDROCK);
+               }
+           }
+       }
+
+       for (x = spawn.getBlockX() - 6; x <= spawn.getBlockX() + 6; x++) {
+           for (int y = spawn.getBlockY() + 2; y <= spawn.getBlockY() + 10; y++) {
+               for (int z = spawn.getBlockZ() - 6; z <= spawn.getBlockZ() + 6; z++) {
+                   world.getBlockAt(x, y, z).setType(Material.AIR);
+               }
+           }
+       }
+
+       for (x = spawn.getBlockX() - 7; x <= spawn.getBlockX() + 7; x++) {
+           for (int y = spawn.getBlockY() + 10; y <= spawn.getBlockY() + 10; y++) {
+               for (int z = spawn.getBlockZ() - 7; z <= spawn.getBlockZ() + 7; z++) {
+                   world.getBlockAt(x, y, z).setType(Material.BARRIER);
+               }
+           }
+       }
+       spawn.setY(2);
+       Location chestLocation = new Location(world, spawn.getBlockX(), spawn.getBlockY() + 1, spawn.getBlockZ() - 2);
+       chestLocation.getBlock().setType(Material.CHEST);
+       if (chestLocation.getBlock().getState() instanceof Chest) {
+           Chest chest = (Chest) chestLocation.getBlock().getState();
+           Directional d = (Directional) chestLocation.getBlock().getBlockData();
+           d.setFacing(BlockFace.SOUTH);
+           chest.setBlockData(d);
+           chest.update();
+       }
+       world.setPVP(false);
+       world.setKeepSpawnInMemory(false);
+       world.setDifficulty(Difficulty.PEACEFUL);
+       world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+       world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+       world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+       world.setGameRule(GameRule.DISABLE_RAIDS, true);
+       //world.setGameRule(GameRule.DO_PATROL_SPAWNING, false);
+       //world.setGameRule(GameRule.DO_TRADER_SPAWNING, false);
+       world.setGameRule(GameRule.KEEP_INVENTORY, true);
+       world.setGameRule(GameRule.SPAWN_RADIUS, 5);
+       for (x = spawn.getBlockX() - 1; x <= spawn.getBlockX() + 1; x++) {
+           for (int y = spawn.getBlockY(); y <= spawn.getBlockY(); y++) {
+               for (int z = spawn.getBlockZ() + 1; z <= spawn.getBlockZ() + 3; z++) {
+                   world.getBlockAt(x, y, z).setType(Material.WATER);
+               }
+           }
+       }
+
+       for (Player pl: world.getPlayers()) {
+
+           if (!pl.equals(p)) {
+               pl.hidePlayer(Main.getInstance(), p);
+               p.hidePlayer(Main.getInstance(), pl);
+
+           }
+       }
+       p.setGameMode(GameMode.ADVENTURE);
+       p.setExp(0);
+       p.setLevel(0);
+       p.teleport(spawn.add(0, 1, 0));
+   }
+
+    public static void delWorld() { // Deletes the world if empty
         String DeathWorld = "DeathPlayerWorld";
         if (Bukkit.getWorld(DeathWorld) == null)
             return;
@@ -130,16 +135,5 @@ public class Create {
 
     }
 
-    public static void deleteDirectory(File file) throws IOException {
-
-        for (File subfile: file.listFiles()) {
-
-            if (subfile.isDirectory()) {
-                deleteDirectory(subfile);
-            }
-
-            FileUtils.forceDelete(subfile);
-        }
-    }
 
 }

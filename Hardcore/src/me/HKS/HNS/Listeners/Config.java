@@ -95,7 +95,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
         int deaths = Config.getInt("players." + PlayerUUID + ".Deaths");
         int Maxdeaths = Config.getInt("players." + PlayerUUID + ".MaxDeaths");
         if (deaths >= Maxdeaths) { // Set's the player to adventure mode if he dies too many times and sends him to another world
-            Create.CreateWorld(e.getPlayer());
+            Create.tpToWorld(p);
         } else if (p.getGameMode().equals(GameMode.ADVENTURE)) {
 
             p.setGameMode(GameMode.SURVIVAL);
@@ -140,19 +140,17 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent e) {
         config();
-        UUID PlayerUUID = e.getPlayer().getUniqueId();
+        Player p = e.getPlayer();
+        UUID PlayerUUID = p.getUniqueId();
         int deaths = Config.getInt("players." + PlayerUUID + ".Deaths");
         int Maxdeaths = Config.getInt("players." + PlayerUUID + ".MaxDeaths");
         if (deaths >= Maxdeaths) { // If a player reaches the limit of deaths, he must go fishing 
-            Player p = e.getPlayer();
             String DeathWorld = "DeathPlayerWorld";
 
             if (!p.getWorld().getName().equalsIgnoreCase(DeathWorld)) {
                 p.getInventory().clear();
             }
-            if (Create.CreateWorld(p) == false)
-                return;
-
+            Create.tpToWorld(p);
             p.setGameMode(GameMode.ADVENTURE);
             p.setExp(0);
             p.setLevel(0);
@@ -367,7 +365,6 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
                         e.printStackTrace();
                     }
 
-                    Create.DelWorld(p);
                 } else {
 
                     commandsend(p, "§7 to buy you Free you must pay with " + Fishcount + " fishs",
