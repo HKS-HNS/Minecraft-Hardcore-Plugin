@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -27,7 +28,12 @@ public class Updater {
     public Updater(PluginDescriptionFile pdf, File file) {
         String a = pdf.getVersion();
         try {
-            URL jurl = new URL("https://hkshns.000webhostapp.com/Version.json");
+            URL jurl = new URL("https://hkshns.000webhostapp.com/hardcore/Version.json");            
+            if (!InetAddress.getByName("www.000webhost.com").isReachable(400)) {
+            	Bukkit.getLogger().warning("You don't have an internet connection");
+            	return;  
+            }
+            	           
             URLConnection request = jurl.openConnection();
             request.connect(); // Connect to the Website
 
