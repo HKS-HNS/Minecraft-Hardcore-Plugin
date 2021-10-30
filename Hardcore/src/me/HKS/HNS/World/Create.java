@@ -87,8 +87,6 @@ public class Create {
        world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
        world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
        world.setGameRule(GameRule.DISABLE_RAIDS, true);
-       //world.setGameRule(GameRule.DO_PATROL_SPAWNING, false);
-       //world.setGameRule(GameRule.DO_TRADER_SPAWNING, false);
        world.setGameRule(GameRule.KEEP_INVENTORY, true);
        world.setGameRule(GameRule.SPAWN_RADIUS, 5);
        for (x = spawn.getBlockX() - 1; x <= spawn.getBlockX() + 1; x++) {

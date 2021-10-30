@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -20,6 +21,9 @@ public interface StopSoundInf{
     
     @EventHandler
     public void onLeave(PlayerQuitEvent e);
+    
+    @EventHandler
+    public void onSwitchSlot(PlayerItemHeldEvent e);
     
     @EventHandler
     public void onFish(PlayerFishEvent e);

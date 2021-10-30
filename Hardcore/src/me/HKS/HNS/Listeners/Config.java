@@ -55,10 +55,11 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
     public File ConfigFile = new File("plugins/Hardcore", "config.yml");
     public FileConfiguration Config = YamlConfiguration.loadConfiguration(ConfigFile);
 
-    int DefaultDeathCount = 5;
+    int defaultDeathCount = 5;
     int experienceLevels = 5;
-    int DefaultFishCount = 10;
-    Boolean AntiHack = false;
+    int defaultFishCount = 10;
+    Boolean antiHack = false;
+    
     public Config() {
         config();
     }
@@ -67,17 +68,17 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
         ConfigFile = new File("plugins/Hardcore", "config.yml");
         Config = YamlConfiguration.loadConfiguration(this.ConfigFile);
         if (!ConfigFile.exists()) {
-            Config.set("Death.Count", Integer.valueOf(DefaultDeathCount));
-            Config.set("Fish.Count", Integer.valueOf(DefaultFishCount));
+            Config.set("Death.Count", Integer.valueOf(defaultDeathCount));
+            Config.set("Fish.Count", Integer.valueOf(defaultFishCount));
             Config.set("Buy.Experiencelevels", Integer.valueOf(experienceLevels));
-            Config.set("AntiHack.Range", AntiHack);
+            Config.set("antiHack.Range", antiHack);
             Config.set("players.1e43497a-ce3e-4381-8850-8410a676c847.Deaths", Integer.valueOf(0));
-            Config.set("players.1e43497a-ce3e-4381-8850-8410a676c847.MaxDeaths", Integer.valueOf(DefaultDeathCount));
+            Config.set("players.1e43497a-ce3e-4381-8850-8410a676c847.MaxDeaths", Integer.valueOf(defaultDeathCount));
         }
-        DefaultDeathCount = Config.getInt("Death.Count");
-        DefaultFishCount = Config.getInt("Fish.Count");
+        defaultDeathCount = Config.getInt("Death.Count");
+        defaultFishCount = Config.getInt("Fish.Count");
         experienceLevels = Config.getInt("Buy.Experiencelevels");
-        AntiHack = Config.getBoolean("AntiHack.Range");
+        antiHack = Config.getBoolean("antiHack.Range");
         try {
             Config.save(ConfigFile);
         } catch (IOException e) {
@@ -105,7 +106,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
     @EventHandler
     public void onHit(EntityDamageByEntityEvent e) {
 
-        if (e.getDamager() instanceof Player && e.getCause().equals(DamageCause.ENTITY_ATTACK) && AntiHack.equals(true)) {
+        if (e.getDamager() instanceof Player && e.getCause().equals(DamageCause.ENTITY_ATTACK) && antiHack.equals(true)) {
             Entity whoWasHit = e.getEntity();
             Player Hitter = (Player) e.getDamager();
 
@@ -205,7 +206,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
     }
 
     @EventHandler
-    public void OnChestOpen(PlayerInteractEvent e) { // Creates a Chest for the Fishing
+    public void onChestOpen(PlayerInteractEvent e) { // Creates a Chest for the Fishing
         if (e.hasBlock()) {
             if (e.getClickedBlock().getType() == Material.CHEST) {
                 String DeathWorld = "DeathPlayerWorld";
@@ -227,7 +228,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
     }
 
     @EventHandler
-    public void OnDropEvent(PlayerDropItemEvent e) {
+    public void onDropEvent(PlayerDropItemEvent e) {
         String DeathWorld = "DeathPlayerWorld";
         Player p = e.getPlayer();
         if (Bukkit.getWorld(DeathWorld) != null)
@@ -278,7 +279,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
             UUID PlayerUUID = p.getUniqueId();
             config();
             if (Config.get("players." + PlayerUUID + ".MaxDeaths") == null || Config.get("players." + PlayerUUID + ".Deaths") == null) {
-                commandsend(p, "Somthing bad happened pleas rejoin. ⅽ"); // Say's the player he must rejoin if he isn't saved in the config
+                commandSend(p, "Somthing bad happened pleas rejoin. ⅽ"); // Say's the player he must rejoin if he isn't saved in the config
                 return true;
             }
             int deaths = Config.getInt("players." + PlayerUUID + ".Deaths");
@@ -296,18 +297,18 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
                         }
                         return true;
                     } else {
-                        commandsend(p, "§7You dont have enough Exp Your levels: §a" + p.getLevel() + "§7 and §a" + (experienceLevels * Integer.valueOf(args[1])) + "§7 Levels are requiret.");
+                        commandSend(p, "§7You dont have enough Exp Your levels: §a" + p.getLevel() + "§7 and §a" + (experienceLevels * Integer.valueOf(args[1])) + "§7 Levels are requiret.");
                     }
                 } else {
-                    commandsend(p, "§7Hardcore buy <count>  |  How many levels you want to buy", "§7One Live costs 5xp levels");
+                    commandSend(p, "§7Hardcore buy <count>  |  How many levels you want to buy", "§7One Live costs 5xp levels");
 
                 }
             } else if (args[0].equalsIgnoreCase("Deathsleft")) { // Sends the lives to the player if the command is executed
                 if (Maxdeaths > deaths) {
-                    commandsend(p, "§7 You have " + String.valueOf(Maxdeaths - deaths) + " Deaths Left");
+                    commandSend(p, "§7 You have " + String.valueOf(Maxdeaths - deaths) + " Deaths Left");
 
                 } else {
-                    commandsend(p, "§7 Sorry, you have 0 Lives Left and you can't buy it anymore :(");
+                    commandSend(p, "§7 Sorry, you have 0 Lives Left and you can't buy it anymore :(");
 
                 }
 
@@ -367,7 +368,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
 
                 } else {
 
-                    commandsend(p, "§7 to buy you Free you must pay with " + Fishcount + " fishs",
+                    commandSend(p, "§7 to buy you Free you must pay with " + Fishcount + " fishs",
                         "§7 You only have " + cod + " fishs fished you must have " + (Fishcount - cod) + " more.");
                 }
             }
@@ -378,7 +379,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
 
     public void createPlayer(UUID PlayerUUID) { // creates a new player if he dont exists in the config
         if (Config.get("players." + PlayerUUID + ".MaxDeaths") == null) {
-            Config.set("players." + PlayerUUID + ".MaxDeaths", Integer.valueOf(DefaultDeathCount));
+            Config.set("players." + PlayerUUID + ".MaxDeaths", Integer.valueOf(defaultDeathCount));
         }
         if (Config.get("players." + PlayerUUID + ".Deaths") == null) {
             Config.set("players." + PlayerUUID + ".Deaths", Integer.valueOf(0));
@@ -419,7 +420,7 @@ public class Config implements Listener, CommandExecutor, TabCompleter {
         return true;
     }
 
-    public void commandsend(Player p, String...Message) {
+    public void commandSend(Player p, String...Message) {
         p.sendMessage("§1|---------------------§4§lHardcore§1---------------------|");
         p.sendMessage(Message);
         p.sendMessage("§1|---------------------§4§lHardcore§1---------------------|");
