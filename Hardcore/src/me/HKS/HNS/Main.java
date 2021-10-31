@@ -9,10 +9,8 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.HKS.HNS.Listeners.Config;
-import me.HKS.HNS.Listeners.StopSound_v1_14_R1;
-import me.HKS.HNS.Listeners.StopSound_v1_15_R1;
-import me.HKS.HNS.Listeners.StopSound_v1_16_R3;
-import me.HKS.HNS.Listeners.StopSound_v1_17_R1;
+import me.HKS.HNS.Listeners.StopSound_v1_14_v1_16;
+import me.HKS.HNS.Listeners.StopSound_v1_17;
 import me.HKS.HNS.Screen.Actionbar;
 import me.HKS.HNS.World.Create;
 
@@ -62,14 +60,10 @@ public class Main extends JavaPlugin {
 			return false;
 		}
 		
-		if(sversion.equals("v1_14_R1"))
-			StopSound = new StopSound_v1_14_R1();
-		else if (sversion.equals("v1_15_R1"))
-			StopSound = new StopSound_v1_15_R1();
-		else if (sversion.equals("v1_16_R3"))
-			StopSound = new StopSound_v1_16_R3();
-		else if (sversion.equals("v1_17_R1"))
-			StopSound = new StopSound_v1_17_R1();
+		if(sversion.contains("v1_14") || sversion.contains("v1_15") || sversion.contains("v1_16"))
+			StopSound = new StopSound_v1_14_v1_16();
+		else if (sversion.contains("v1_17"))
+			StopSound = new StopSound_v1_17();
 		
 		if (StopSound != null){
 	        this.getServer().getPluginManager().registerEvents((Listener) StopSound, (Plugin) this);
