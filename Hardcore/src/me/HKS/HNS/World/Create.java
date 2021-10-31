@@ -44,6 +44,9 @@ public class Create {
        String DeathWorld = "DeathPlayerWorld";
 	   World world = Bukkit.getWorld(DeathWorld);
        Location spawn = world.getSpawnLocation();
+       spawn.setY(2);
+       Location chestLocation = new Location(world, spawn.getBlockX(), spawn.getBlockY() + 1, spawn.getBlockZ() - 2);
+       chestLocation.getBlock().setType(Material.AIR);
        spawn.setY(1);
 
        int x;
@@ -71,7 +74,6 @@ public class Create {
            }
        }
        spawn.setY(2);
-       Location chestLocation = new Location(world, spawn.getBlockX(), spawn.getBlockY() + 1, spawn.getBlockZ() - 2);
        chestLocation.getBlock().setType(Material.CHEST);
        if (chestLocation.getBlock().getState() instanceof Chest) {
            Chest chest = (Chest) chestLocation.getBlock().getState();
