@@ -1,6 +1,6 @@
 name: Hardcore
 version: 1.0
-api-version: 1.15
+api-version: 1.14
 main: me.HKS.HNS.Main
 author: HNS_HKS 
 commands:
