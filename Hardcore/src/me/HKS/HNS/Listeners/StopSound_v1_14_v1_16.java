@@ -1,10 +1,11 @@
 package me.HKS.HNS.Listeners;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,11 +22,8 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.ChannelPromise;
-import net.minecraft.server.v1_14_R1.PacketPlayOutNamedSoundEffect;
-import net.minecraft.server.v1_14_R1.SoundEffect;
-import net.minecraft.server.v1_14_R1.SoundEffects;
 
-public class StopSound_v1_14_R1 implements Listener, StopSoundInf {
+public class StopSound_v1_14_v1_16 implements Listener, StopSoundInf {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
@@ -72,7 +70,7 @@ public class StopSound_v1_14_R1 implements Listener, StopSoundInf {
     }
 
     public void removePlayer(Player p) {
-        Channel channel = ((CraftPlayer) p).getHandle().playerConnection.networkManager.channel;
+        Channel channel = getChannel(p);
         channel.eventLoop().submit(() -> {
             channel.pipeline().remove(p.getName());
             return null;
@@ -88,21 +86,21 @@ public class StopSound_v1_14_R1 implements Listener, StopSoundInf {
 
             @Override
             public void write(ChannelHandlerContext channelHandlerContext, Object packet, ChannelPromise promise) throws Exception {
-                if (packet instanceof PacketPlayOutNamedSoundEffect) {
-                    PacketPlayOutNamedSoundEffect packetSoundNamed = (PacketPlayOutNamedSoundEffect) packet;
+            	if (packet.getClass().isAssignableFrom(getNMSClass("PacketPlayOutNamedSoundEffect"))) {
+                    Object packetSoundNamed =  packet;
                     if (p.getWorld().getName().equalsIgnoreCase("DeathPlayerWorld")) {
                         try {
 
                             Field fila = packetSoundNamed.getClass().getDeclaredField("a");
                             fila.setAccessible(true);
-                            SoundEffect a = (SoundEffect) fila.get(packetSoundNamed);
+                            Object a = fila.get(packetSoundNamed);
                             UUID PlayerUUID = p.getUniqueId();
-                            if (a.equals(SoundEffects.ENTITY_FISHING_BOBBER_RETRIEVE) || a.equals(SoundEffects.ENTITY_FISHING_BOBBER_SPLASH) || a.equals(SoundEffects.ENTITY_FISHING_BOBBER_THROW) || a.equals(SoundEffects.ENTITY_GENERIC_SPLASH)) {
+                            if (a.equals(getSoundEffect("ENTITY_FISHING_BOBBER_RETRIEVE")) || a.equals(getSoundEffect("ENTITY_FISHING_BOBBER_SPLASH")) || a.equals(getSoundEffect("ENTITY_FISHING_BOBBER_THROW")) || a.equals(getSoundEffect("ENTITY_GENERIC_SPLASH"))) {
 
                                 if (playerReelin.contains(PlayerUUID)) {
                                     playerReelin.remove(PlayerUUID);
                                     playersFishing.remove(PlayerUUID);
-                                    if (!a.equals(SoundEffects.ENTITY_FISHING_BOBBER_RETRIEVE)) {
+                                    if (!a.equals(getSoundEffect("ENTITY_FISHING_BOBBER_RETRIEVE"))) {
 
                                         return;
                                     }
@@ -110,11 +108,11 @@ public class StopSound_v1_14_R1 implements Listener, StopSoundInf {
                                 } else if (playerThrown.contains(PlayerUUID)) {
 
                                     playerThrown.remove(PlayerUUID);
-                                    if (!a.equals(SoundEffects.ENTITY_FISHING_BOBBER_THROW)) {
+                                    if (!a.equals(getSoundEffect("ENTITY_FISHING_BOBBER_THROW"))) {
                                         return;
                                     }
                                 } else if (playersFishing.contains(PlayerUUID)) {
-                                    if (!a.equals(SoundEffects.ENTITY_GENERIC_SPLASH) && !a.equals(SoundEffects.ENTITY_FISHING_BOBBER_SPLASH)) {
+                                    if (!a.equals(getSoundEffect("ENTITY_GENERIC_SPLASH")) && !a.equals(getSoundEffect("ENTITY_FISHING_BOBBER_SPLASH"))) {
                                         return;
                                     }
                                 } else {
@@ -133,9 +131,43 @@ public class StopSound_v1_14_R1 implements Listener, StopSoundInf {
                 super.write(channelHandlerContext, packet, promise);
             }
         };
-
-        ChannelPipeline pipeline = ((CraftPlayer) p).getHandle().playerConnection.networkManager.channel.pipeline();
+        
+        ChannelPipeline pipeline = getChannel(p).pipeline();
         pipeline.addBefore("packet_handler", p.getName(), channelDuplexHandler);
     }
+    
+    public Channel getChannel(Player p)  {
+
+    	try {
+    		Class<?> craftplayer = getCraftBukkitClass("entity.CraftPlayer"); 
+    		Method getHandle = craftplayer.getMethod("getHandle");
+    		Object nms = getHandle.invoke(p);
+    		Object b = nms.getClass().getField("playerConnection").get(nms);
+    		Object a = b.getClass().getField("networkManager").get(b);
+    		Object chan = a.getClass().getField("channel").get(a);
+    		return (Channel) chan;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+    	
+    	 
+    	
+    }
+    
+    public Object getSoundEffect(String name) throws Exception {
+    	Class<?> SoundEffects = getNMSClass("SoundEffects");
+        return SoundEffects.getField(name.toUpperCase()).get(SoundEffects);
+      }
+    public Class<?> getNMSClass(String name) throws ClassNotFoundException {
+        return Class.forName("net.minecraft.server." + getServerVersion() + "." + name);
+      }
+    public Class<?> getCraftBukkitClass(String name) throws ClassNotFoundException {
+        return Class.forName("org.bukkit.craftbukkit." + getServerVersion() + "." + name);
+      }
+    public String getServerVersion() {
+        return  Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+
+      }
 
 }
