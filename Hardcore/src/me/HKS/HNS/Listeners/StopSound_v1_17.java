@@ -1,9 +1,10 @@
 package me.HKS.HNS.Listeners;
 
+import java.lang.reflect.Method;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,7 +24,7 @@ import io.netty.channel.ChannelPromise;
 import net.minecraft.network.protocol.game.PacketPlayOutNamedSoundEffect;
 import net.minecraft.sounds.SoundEffects;
 
-public class StopSound_v1_17_R1 implements Listener, StopSoundInf {
+public class StopSound_v1_17 implements Listener, StopSoundInf {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
@@ -34,6 +35,7 @@ public class StopSound_v1_17_R1 implements Listener, StopSoundInf {
     public void onLeave(PlayerQuitEvent e) {
         removePlayer(e.getPlayer());
     }
+    
     @EventHandler
     public void onSwitchSlot(PlayerItemHeldEvent e ) {
     	Player p = e.getPlayer();
@@ -50,6 +52,7 @@ public class StopSound_v1_17_R1 implements Listener, StopSoundInf {
 
     	}
     }
+    
     @EventHandler
     public void onFish(PlayerFishEvent e) {
         if (e.getPlayer().getWorld().getName().equalsIgnoreCase("DeathPlayerWorld")) {
@@ -67,14 +70,20 @@ public class StopSound_v1_17_R1 implements Listener, StopSoundInf {
             }
 
         }
-    }
-
+    } 
+    
     public void removePlayer(Player p) {
-        Channel channel = ((CraftPlayer) p).getHandle().b.a.k;
+    	
+    	try {
+    		
+    	Channel channel = getChannel(p);
         channel.eventLoop().submit(() -> {
             channel.pipeline().remove(p.getName());
             return null;
         });
+    	} catch (Exception e) {
+			e.printStackTrace();
+		}
     }
 
     public void injectPlayer(Player p) {
@@ -121,8 +130,41 @@ public class StopSound_v1_17_R1 implements Listener, StopSoundInf {
             }
         };
 
-        ChannelPipeline pipeline = ((CraftPlayer) p).getHandle().b.a.k.pipeline();
+        
+        ChannelPipeline pipeline = getChannel(p).pipeline();
         pipeline.addBefore("packet_handler", p.getName(), channelDuplexHandler);
+    };
+
+    public Channel getChannel(Player p)  {
+    	
+    	try {  
+    		
+    		
+    		Class<?> craftplayer = getCraftBukkitClass("entity.CraftPlayer"); 
+    		Method getHandle = craftplayer.getMethod("getHandle");
+    		Object nms = getHandle.invoke(p);
+    		Object b = nms.getClass().getField("b").get(nms);
+    		Object a = b.getClass().getField("a").get(b);
+    		Object chan = a.getClass().getField("k").get(a);
+    		return (Channel) chan;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+    	
+    }
+    
+    public Class<?> getNMSClass(String name) throws ClassNotFoundException {
+      return Class.forName("net.minecraft.server." + getServerVersion() + "." + name);
+    }
+
+    public Class<?> getCraftBukkitClass(String name) throws ClassNotFoundException {
+      return Class.forName("org.bukkit.craftbukkit." + getServerVersion() + "." + name);
+    }
+
+    public String getServerVersion() {
+      return  Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+
     }
 
 }

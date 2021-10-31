@@ -11,6 +11,8 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import io.netty.channel.Channel;
+
 public interface StopSoundInf{
     List < UUID > playersFishing = new ArrayList < > ();
     List < UUID > playerThrown = new ArrayList < > ();
@@ -30,5 +32,11 @@ public interface StopSoundInf{
     
     void removePlayer(Player p);
     void injectPlayer(Player p);
+    
+    Channel getChannel(Player p);
 
+    //public Object getSoundEffect(String name) throws Exception;
+    public Class<?> getNMSClass(String name) throws ClassNotFoundException;
+    public Class<?> getCraftBukkitClass(String name) throws ClassNotFoundException;
+    public String getServerVersion();
 }
