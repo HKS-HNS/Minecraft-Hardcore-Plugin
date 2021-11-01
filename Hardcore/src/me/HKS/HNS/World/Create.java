@@ -1,6 +1,8 @@
 package me.HKS.HNS.World;
 
 import java.io.File;
+import java.util.regex.Pattern;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
@@ -88,7 +90,14 @@ public class Create {
        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
        world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
        world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
-       world.setGameRule(GameRule.DISABLE_RAIDS, true);
+       if(Pattern.compile("v1_1[4-8]_R.$").matcher(getServerVersion()).find()) {
+           world.setGameRule(GameRule.DISABLE_RAIDS, true);
+           world.setGameRule(GameRule.DO_TRADER_SPAWNING, false);
+           world.setGameRule(GameRule.DO_PATROL_SPAWNING, false);
+       }
+       if (Pattern.compile("v1_1[7-8]_R.$").matcher(getServerVersion()).find()) {
+    	   world.setGameRule(GameRule.FREEZE_DAMAGE, false);
+       }
        world.setGameRule(GameRule.KEEP_INVENTORY, true);
        world.setGameRule(GameRule.SPAWN_RADIUS, 5);
        for (x = spawn.getBlockX() - 1; x <= spawn.getBlockX() + 1; x++) {
@@ -133,6 +142,11 @@ public class Create {
             e.printStackTrace();
         }
 
+    }
+    
+    
+    private static String getServerVersion() {
+    	return Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
     }
 
 
