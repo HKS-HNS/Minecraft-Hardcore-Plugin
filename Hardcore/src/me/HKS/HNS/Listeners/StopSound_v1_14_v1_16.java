@@ -86,8 +86,8 @@ public class StopSound_v1_14_v1_16 implements Listener, StopSoundInf {
 
             @Override
             public void write(ChannelHandlerContext channelHandlerContext, Object packet, ChannelPromise promise) throws Exception {
-            	if (packet.getClass().isAssignableFrom(getNMSClass("PacketPlayOutNamedSoundEffect"))) {
-                    Object packetSoundNamed =  packet;
+                if (packet.getClass().isAssignableFrom(getNMSClass("PacketPlayOutNamedSoundEffect"))) {
+                    Object packetSoundNamed = packet;
                     if (p.getWorld().getName().equalsIgnoreCase("DeathPlayerWorld")) {
                         try {
 
@@ -131,43 +131,41 @@ public class StopSound_v1_14_v1_16 implements Listener, StopSoundInf {
                 super.write(channelHandlerContext, packet, promise);
             }
         };
-        
+
         ChannelPipeline pipeline = getChannel(p).pipeline();
         pipeline.addBefore("packet_handler", p.getName(), channelDuplexHandler);
     }
-    
-    public Channel getChannel(Player p)  {
 
-    	try {
-    		Class<?> craftplayer = getCraftBukkitClass("entity.CraftPlayer"); 
-    		Method getHandle = craftplayer.getMethod("getHandle");
-    		Object nms = getHandle.invoke(p);
-    		Object b = nms.getClass().getField("playerConnection").get(nms);
-    		Object a = b.getClass().getField("networkManager").get(b);
-    		Object chan = a.getClass().getField("channel").get(a);
-    		return (Channel) chan;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-    	
-    	 
-    	
+    public Channel getChannel(Player p) {
+
+        try {
+            Class < ? > craftplayer = getCraftBukkitClass("entity.CraftPlayer");
+            Method getHandle = craftplayer.getMethod("getHandle");
+            Object nms = getHandle.invoke(p);
+            Object b = nms.getClass().getField("playerConnection").get(nms);
+            Object a = b.getClass().getField("networkManager").get(b);
+            Object chan = a.getClass().getField("channel").get(a);
+            return (Channel) chan;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
     }
-    
-    public Object getSoundEffect(String name) throws Exception {
-    	Class<?> SoundEffects = getNMSClass("SoundEffects");
-        return SoundEffects.getField(name.toUpperCase()).get(SoundEffects);
-      }
-    public Class<?> getNMSClass(String name) throws ClassNotFoundException {
-        return Class.forName("net.minecraft.server." + getServerVersion() + "." + name);
-      }
-    public Class<?> getCraftBukkitClass(String name) throws ClassNotFoundException {
-        return Class.forName("org.bukkit.craftbukkit." + getServerVersion() + "." + name);
-      }
-    public String getServerVersion() {
-        return  Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
-      }
+    public Object getSoundEffect(String name) throws Exception {
+        Class < ? > SoundEffects = getNMSClass("SoundEffects");
+        return SoundEffects.getField(name.toUpperCase()).get(SoundEffects);
+    }
+    public Class < ? > getNMSClass(String name) throws ClassNotFoundException {
+        return Class.forName("net.minecraft.server." + getServerVersion() + "." + name);
+    }
+    public Class < ? > getCraftBukkitClass(String name) throws ClassNotFoundException {
+        return Class.forName("org.bukkit.craftbukkit." + getServerVersion() + "." + name);
+    }
+    public String getServerVersion() {
+        return Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+
+    }
 
 }
