@@ -1,5 +1,7 @@
 package me.HKS.HNS;
 
+import java.util.regex.Pattern;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.TabCompleter;
@@ -9,7 +11,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.HKS.HNS.Listeners.Config;
-import me.HKS.HNS.Listeners.StopSound_v1_14_v1_16;
+import me.HKS.HNS.Listeners.StopSound_v1_13_v1_16;
 import me.HKS.HNS.Listeners.StopSound_v1_17;
 import me.HKS.HNS.Screen.Actionbar;
 import me.HKS.HNS.World.Create;
@@ -60,8 +62,8 @@ public class Main extends JavaPlugin {
 			return false;
 		}
 		
-		if(sversion.contains("v1_14") || sversion.contains("v1_15") || sversion.contains("v1_16"))
-			StopSound = new StopSound_v1_14_v1_16();
+		if(Pattern.compile("v1_1[3-6]_R.$").matcher(sversion).find())
+			StopSound = new StopSound_v1_13_v1_16();
 		else if (sversion.contains("v1_17"))
 			StopSound = new StopSound_v1_17();
 		
