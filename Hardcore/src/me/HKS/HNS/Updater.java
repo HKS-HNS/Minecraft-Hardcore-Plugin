@@ -49,7 +49,7 @@ public class Updater {
                     file.delete();
                 }
                 file.createNewFile();
-                URL Downurl = new URL(rootobj.get("URL").getAsString()); // Download's the jar
+                URL Downurl = new URL(encodeValue(rootobj.get("URL").getAsString())); // Download's the jar
                 OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
                 URLConnection conn = Downurl.openConnection();
                 InputStream in = conn.getInputStream();
