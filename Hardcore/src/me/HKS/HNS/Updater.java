@@ -6,16 +6,18 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 /***
  * 
  * Plugin updater
@@ -28,7 +30,8 @@ public class Updater {
     public Updater(PluginDescriptionFile pdf, File file) {
         String a = pdf.getVersion();
         try {
-            URL jurl = new URL("https://hkshns.000webhostapp.com/hardcore/Version.json");            
+        	String encodedQuery = encodeValue("https://hkshns.000webhostapp.com/hardcore/Version.json");
+            URL jurl = new URL(encodedQuery); 
             if (!InetAddress.getByName("www.000webhost.com").isReachable(400)) {
             	Bukkit.getLogger().warning("You don't have an internet connection");
             	return;  
@@ -71,4 +74,10 @@ public class Updater {
 
     }
 
+    
+    private static String encodeValue(String value) throws UnsupportedEncodingException {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
+    }
 }
+
+
